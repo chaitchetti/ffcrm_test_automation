@@ -14,8 +14,8 @@ class TestRecordExistence < Minitest::Test
   def setup
     @client = Mysql2::Client.new(
       host: "34.218.237.182",
-      username: "dbuser",
-      password: "dbuser",
+      username: "test",
+      password: "test",
       database: "fat_free_crm_development"
     )
   end
@@ -27,7 +27,7 @@ class TestRecordExistence < Minitest::Test
   def test_record_exists
     table_name = "accounts"
     condition_column = "name"
-    condition_value = "test_user"
+    condition_value = "chait"
 
     assert_record_exists(@client, table_name, condition_column, condition_value)
   end
