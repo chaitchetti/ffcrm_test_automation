@@ -27,7 +27,7 @@ class TestRecordExistence < Minitest::Test
   def test_record_exists
     table_name = "accounts"
     condition_column = "name"
-    condition_value = "test"
+    condition_value = "test_user"
 
     assert_record_exists(@client, table_name, condition_column, condition_value)
   end
