@@ -9,7 +9,7 @@ browser.manage.window.maximize
 
 # Function to login
 def login(browser, username, password)
-  browser.get('http://54.149.62.117:3000/') 
+  browser.get('http://54.149.62.117:3000/')
 
   # Hover over the username field
   username_field = browser.find_element(id: 'user_email')
@@ -49,7 +49,7 @@ def create_account(browser, name)
     # Click on the Create Account button
     create_account_button = browser.find_element(xpath: '//a[text()="Create Account"]')
     create_account_button.click
-  
+
     # Fill in the Name field
     wait = Selenium::WebDriver::Wait.new(timeout: 10) # Adjust the timeout as needed
     name_field = wait.until { browser.find_element(id: 'account_name') }
@@ -59,8 +59,8 @@ def create_account(browser, name)
     wait = Selenium::WebDriver::Wait.new(timeout: 10) # Adjust the timeout as needed
     create_account_button_final = wait.until { browser.find_element(xpath: '//input[@value="Create Account"]') }
     create_account_button_final.click
-    sleep(10)    
-  
+    sleep(10)
+
     # Check if the account is created
     wait = Selenium::WebDriver::Wait.new(timeout: 10)
     confirmation_message = wait.until { browser.find_element(class: 'indent') }
@@ -76,17 +76,17 @@ def read_account(browser, username)
     # Click on the Accounts tab
     accounts_tab = browser.find_element(xpath: '//ul[@id="navbarNav"]/li[5]')
     accounts_tab.click
-  
+
     # Click on the Advanced Search tab
     wait = Selenium::WebDriver::Wait.new(timeout: 10)
     advanced_search_tab = wait.until { browser.find_element(xpath: '//a[contains(text(), "Advanced search")]') }
     advanced_search_tab.click
-  
+
     # Select "Name" in the Account dropdown
     wait = Selenium::WebDriver::Wait.new(timeout: 10)
     account_dropdown = wait.until { browser.find_element(id: 'q_g_0_c_0_a_0_name') }
     account_select = Selenium::WebDriver::Support::Select.new(account_dropdown)
-  
+
    # Click on the dropdown to open options
     account_dropdown.click
 
@@ -96,12 +96,12 @@ def read_account(browser, username)
     # Select "Name" in the Account dropdown
     account_select.select_by(:text, 'Name')
     sleep(10)
-  
+
     # Print a message indicating the selection
-    puts "Selected 'Name' in the Account dropdown and waited for 10 seconds."  
+    puts "Selected 'Name' in the Account dropdown and waited for 10 seconds."
 
     # Enter the account name in the text field
-    search_text_field = browser.find_element(id: 'q_g_0_c_0_v_0_value')
+    search_text_field = wait.until { browser.find_element(id: 'q_g_0_c_0_v_0_value') }
     search_text_field.send_keys(username)
 
     # Click on the Search button
@@ -109,21 +109,190 @@ def read_account(browser, username)
     search_button.click
 
     # Click on the account in the search results
-
     wait = Selenium::WebDriver::Wait.new(timeout: 10)
-    # Click on the account in the search results using a flexible CSS selector
-    search_result_account_link = browser.find_element(css: 'a:contains("chaita")[href*="/accounts/20"]')
+    search_result_account_link = browser.find_element(xpath: '//a[contains(text(), "chaita") and contains(@href, "/accounts/")]')
     search_result_account_link.click
 
 end
-  
+
+def update_account(browser, username)
+    accounts_tab = browser.find_element(xpath: '//ul[@id="navbarNav"]/li[5]')
+    accounts_tab.click
+
+    # Click on the Advanced Search tab
+    wait = Selenium::WebDriver::Wait.new(timeout: 10)
+    advanced_search_tab = wait.until { browser.find_element(xpath: '//a[contains(text(), "Advanced search")]') }
+    advanced_search_tab.click
+
+    # Select "Name" in the Account dropdown
+    wait = Selenium::WebDriver::Wait.new(timeout: 10)
+    account_dropdown = wait.until { browser.find_element(id: 'q_g_0_c_0_a_0_name') }
+    account_select = Selenium::WebDriver::Support::Select.new(account_dropdown)
+
+    # Click on the dropdown to open options
+    account_dropdown.click
+
+    # Wait for the dropdown options to appear
+    wait.until { account_select.options.any? }
+
+    # Select "Name" in the Account dropdown
+    account_select.select_by(:text, 'Name')
+    sleep(10)
+
+    # Print a message indicating the selection
+    puts "Selected 'Name' in the Account dropdown and waited for 10 seconds."
+
+    # Enter the account name in the text field
+    search_text_field = wait.until { browser.find_element(id: 'q_g_0_c_0_v_0_value') }
+    search_text_field.send_keys(username)
+
+    # Click on the Search button
+    search_button = browser.find_element(css: '.btn.btn-primary.btn-large.submit-search')
+    search_button.click
+
+    # Click on the account in the search results
+    wait = Selenium::WebDriver::Wait.new(timeout: 10)
+    search_result_account_link = browser.find_element(xpath: '//a[contains(text(), "chaita") and contains(@href, "/accounts/")]')
+    search_result_account_link.click
+
+
+    # Click on "Create Task" link
+    create_task_link_xpath = '//a[contains(text(), "Create Task") and contains(@href, "/tasks/new?cancel=false&related=account_")]'
+    create_task_link = wait.until { browser.find_element(xpath: create_task_link_xpath) }
+
+    # Scroll into view to make the element visible
+    browser.execute_script("arguments[0].scrollIntoView(true);", create_task_link)
+
+    if wait.until { create_task_link.enabled? rescue false }
+      # Click on the "Create Task" link
+      create_task_link.click
+
+      # Debugging output
+      puts "Before clicking on 'Create Task' link"
+      puts "After clicking on 'Create Task' link"
+    else
+      puts "The 'Create Task' link is not clickable."
+    end
+
+    # Explicitly wait for the presence of the task form
+    wait.until { browser.find_element(id: 'task_name').displayed? }
+
+    # Enter task details
+    task_name_field = browser.find_element(id: 'task_name')
+    task_name_field.send_keys('Your Task Name')
+
+    # Select a random option from the Due dropdown
+    due_dropdown = browser.find_element(id: 'select2-task_bucket-container')
+    due_dropdown.click
+    due_options = browser.find_elements(xpath: '//span[@id="select2-task_bucket-container"]/following::ul[@class="select2-results__options"]/li')
+    random_due_option = due_options.sample
+    random_due_option.click
+
+    # Select a random option from the Assign To dropdown
+    assign_to_dropdown = browser.find_element(id: 'select2-task_assigned_to-container')
+    assign_to_dropdown.click
+    assign_to_options = browser.find_elements(xpath: '//span[@id="select2-task_assigned_to-container"]/following::ul[@class="select2-results__options"]/li')
+    random_assign_to_option = assign_to_options.sample
+    random_assign_to_option.click
+
+    # Select a random option from the Category dropdown
+    category_dropdown = browser.find_element(id: 'select2-task_category-container')
+    category_dropdown.click
+    category_options = browser.find_elements(xpath: '//span[@id="select2-task_category-container"]/following::ul[@class="select2-results__options"]/li')
+    random_category_option = category_options.sample
+    random_category_option.click
+
+    # Click on "Create Task" button
+    create_task_button = browser.find_element(xpath: '//input[@value="Create Task"]')
+    create_task_button.click
+  end
+
+  # Function to delete an account
+  def delete_account(browser, account_name)
+    # Search for the account using the provided name
+    read_account(browser, account_name)
+
+    # Click on the "Delete" link
+    delete_link_xpath = '//a[contains(text(), "Delete") and contains(@data-method, "delete")]'
+    delete_link = browser.find_element(xpath: delete_link_xpath)
+    delete_link.click
+
+    # Confirm deletion by clicking on the "Yes" link
+    confirm_delete_xpath = '//a[@data-method="delete" and contains(@href, "/accounts/")]'
+    confirm_delete_link = browser.find_element(xpath: confirm_delete_xpath)
+    confirm_delete_link.click
+
+    # Wait for deletion confirmation or error message
+    wait = Selenium::WebDriver::Wait.new(timeout: 10)
+    confirmation_message = wait.until { browser.find_element(class: 'indent') rescue nil }
+
+    if confirmation_message&.displayed?
+      puts "Account deletion successful. #{confirmation_message.text}"
+    else
+      puts "Account deletion failed. Unable to locate confirmation message."
+  end
+
+end
+
+  # Function to select a random option from a dropdown
+def select_random_option(browser, dropdown_id)
+  dropdown_options = browser.find_elements(xpath: "//ul[@id='#{dropdown_id}-results']/li")
+  random_option = dropdown_options.sample
+  random_option.click
+end
+
+# Function to delete an account
+def delete_account(browser, account_name)
+  # Search for the account using the provided name
+  read_account(browser, account_name)
+
+  # Click on the "Delete" link
+  delete_link_xpath = '//a[contains(text(), "Delete") and contains(@data-method, "delete")]'
+  delete_link = wait_for_element(browser, :xpath, delete_link_xpath, 10)
+
+  if delete_link
+    browser.execute_script("arguments[0].click();", delete_link)
+
+    # Confirm deletion by clicking on the "Yes" link
+    confirm_delete_xpath = '//a[@data-method="delete" and contains(@href, "/accounts/")]'
+    confirm_delete_link = wait_for_element(browser, :xpath, confirm_delete_xpath, 10)
+
+    if confirm_delete_link
+      confirm_delete_link.click
+
+      # Wait for deletion confirmation or error message
+      wait = Selenium::WebDriver::Wait.new(timeout: 10)
+      confirmation_message = wait.until { browser.find_element(class: 'indent') rescue nil }
+
+      if confirmation_message&.displayed?
+        puts "Account deletion successful. #{confirmation_message.text}"
+      else
+        puts "Account deletion failed. Unable to locate confirmation message."
+      end
+    else
+      puts "Unable to locate 'Yes' link for confirmation."
+    end
+  else
+    puts "Unable to locate 'Delete' link."
+  end
+end
+
+# Helper function for waiting for an element
+def wait_for_element(browser, by, value, timeout)
+  wait = Selenium::WebDriver::Wait.new(timeout: timeout)
+  wait.until { browser.find_element(by, value) rescue nil }
+end
 
 # Example usage
 begin
   login(browser, 'root', 'root') # Logging in as a test user
   create_account(browser, 'chaita') # Creating an account with the name 'chaita'
-  read_account(browser, 'chaita')
-  sleep(40) 
-rescue StandardError => e
+  #read_account(browser, 'chaita')
+  #update_account(browser, 'chaita')
+  delete_account(browser, 'chaita')
+  sleep(40)
+rescue Selenium::WebDriver::Error::NoSuchElementError, StandardError => e
   puts "Error: #{e.message}"
+#ensure
+  browser.quit
 end
