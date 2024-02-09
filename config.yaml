@@ -1,5 +1,6 @@
 # config.yaml
 webdriver_path: '/usr/local/bin/chromedriver'
+chrome_driver_path: '/usr/local/bin/chromedriver'
 username: 'root'
 password: 'root'
 account_name: 'chaita'
