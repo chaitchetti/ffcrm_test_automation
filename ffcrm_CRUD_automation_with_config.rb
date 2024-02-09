@@ -4,15 +4,11 @@ require 'yaml'
 # Load parameters from config.yaml
 config = YAML.load_file('config.yaml')
 
-chrome_driver_path = '/usr/local/bin/chromedriver'
+chrome_driver_path = config['chrome_driver_path']
 username = config['username']
 password = config['password']
 account_name = config['account_name']
 task_name = config['task_name']
-
-
-# Set the path to the ChromeDriver executable
-chrome_driver_path = '/usr/local/bin/chromedriver'
 
 # Initialize Chrome WebDriver with the specified path
 Selenium::WebDriver::Chrome::Service.driver_path = chrome_driver_path
