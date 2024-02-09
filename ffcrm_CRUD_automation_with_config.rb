@@ -2,18 +2,29 @@ require 'selenium-webdriver'
 require 'yaml'
 
 # Load parameters from config.yaml
-config = YAML.load_file('C:/Users/ymanral/Desktop/config.yaml')
+config = YAML.load_file('config.yaml')
 
-webdriver_path = 'C:/Users/ymanral/Chromedriver/chromedriver.exe'
-ENV['webdriver.chrome.driver'] = webdriver_path
+chrome_driver_path = '/usr/local/bin/chromedriver'
 username = config['username']
 password = config['password']
 account_name = config['account_name']
 task_name = config['task_name']
 
-browser = Selenium::WebDriver.for :chrome
 
-browser.manage.window.maximize
+# Set the path to the ChromeDriver executable
+chrome_driver_path = '/usr/local/bin/chromedriver'
+
+# Initialize Chrome WebDriver with the specified path
+Selenium::WebDriver::Chrome::Service.driver_path = chrome_driver_path
+options = Selenium::WebDriver::Chrome::Options.new
+
+# Headless mode
+options.add_argument('--headless')
+options.add_argument('--disable-gpu') # Add this line to disable GPU acceleration
+
+# Create a new instance of Chrome WebDriver
+browser = Selenium::WebDriver.for :chrome, options: options
+
 
 # Helper function for waiting for an element
 def wait_for_element(browser, by, value, timeout)
@@ -24,8 +35,8 @@ end
 
 # Function to login
 def login(browser, username, password)
-    
-    browser.get('http://50.112.231.151:3000/') 
+
+    browser.get('http://50.112.231.151:3000/')
 
     # Hover over the username field
     username_field = browser.find_element(id: 'user_email')
@@ -65,7 +76,7 @@ def create_account(browser, name)
     # Click on the Create Account button
     create_account_button = browser.find_element(xpath: '//a[text()="Create Account"]')
     create_account_button.click
-  
+
     # Fill in the Name field
     wait = Selenium::WebDriver::Wait.new(timeout: 10) # Adjust the timeout as needed
     name_field = wait.until { browser.find_element(id: 'account_name') }
@@ -75,8 +86,8 @@ def create_account(browser, name)
     wait = Selenium::WebDriver::Wait.new(timeout: 10) # Adjust the timeout as needed
     create_account_button_final = wait.until { browser.find_element(xpath: '//input[@value="Create Account"]') }
     create_account_button_final.click
-    sleep(10)  
-  
+    sleep(10)
+
     # Check if the account is created
     wait = Selenium::WebDriver::Wait.new(timeout: 10)
     confirmation_message = wait.until { browser.find_element(class: 'indent') }
@@ -92,17 +103,17 @@ def read_account(browser, username)
     # Click on the Accounts tab
     accounts_tab = browser.find_element(xpath: '//ul[@id="navbarNav"]/li[5]')
     accounts_tab.click
-  
+
     # Click on the Advanced Search tab
     wait = Selenium::WebDriver::Wait.new(timeout: 10)
     advanced_search_tab = wait.until { browser.find_element(xpath: '//a[contains(text(), "Advanced search")]') }
     advanced_search_tab.click
-  
+
     # Select "Name" in the Account dropdown
     wait = Selenium::WebDriver::Wait.new(timeout: 10)
     account_dropdown = wait.until { browser.find_element(id: 'q_g_0_c_0_a_0_name') }
     account_select = Selenium::WebDriver::Support::Select.new(account_dropdown)
-  
+
    # Click on the dropdown to open options
     account_dropdown.click
 
@@ -112,14 +123,14 @@ def read_account(browser, username)
     # Select "Name" in the Account dropdown
     account_select.select_by(:text, 'Name')
     sleep(10)
-  
+
     # Print a message indicating the selection
-    puts "Selected 'Name' in the Account dropdown and waited for 10 seconds."  
+    puts "Selected 'Name' in the Account dropdown and waited for 10 seconds."
 
     # Enter the account name in the text field
     search_text_field = wait.until { browser.find_element(id: 'q_g_0_c_0_v_0_value') }
     search_text_field.send_keys(username)
-    
+
     # Click on the Search button
     search_button = browser.find_element(css: '.btn.btn-primary.btn-large.submit-search')
     search_button.click
@@ -156,12 +167,12 @@ def update_account(browser, username, task_name)
     sleep(10)
 
     # Print a message indicating the selection
-    puts "Selected 'Name' in the Account dropdown and waited for 10 seconds."  
+    puts "Selected 'Name' in the Account dropdown and waited for 10 seconds."
 
     # Enter the account name in the text field
     search_text_field = wait.until { browser.find_element(id: 'q_g_0_c_0_v_0_value') }
     search_text_field.send_keys(username)
-    
+
     # Click on the Search button
     search_button = browser.find_element(css: '.btn.btn-primary.btn-large.submit-search')
     search_button.click
@@ -195,28 +206,28 @@ def update_account(browser, username, task_name)
     # Enter task details
     task_name_field = browser.find_element(id: 'task_name')
     task_name_field.send_keys(task_name)
-  
+
     # Select a random option from the Due dropdown
     due_dropdown = browser.find_element(id: 'select2-task_bucket-container')
     due_dropdown.click
     due_options = browser.find_elements(xpath: '//span[@id="select2-task_bucket-container"]/following::ul[@class="select2-results__options"]/li')
     random_due_option = due_options.sample
     random_due_option.click
-  
+
     # Select a random option from the Assign To dropdown
     assign_to_dropdown = browser.find_element(id: 'select2-task_assigned_to-container')
     assign_to_dropdown.click
     assign_to_options = browser.find_elements(xpath: '//span[@id="select2-task_assigned_to-container"]/following::ul[@class="select2-results__options"]/li')
     random_assign_to_option = assign_to_options.sample
     random_assign_to_option.click
-  
+
     # Select a random option from the Category dropdown
     category_dropdown = browser.find_element(id: 'select2-task_category-container')
     category_dropdown.click
     category_options = browser.find_elements(xpath: '//span[@id="select2-task_category-container"]/following::ul[@class="select2-results__options"]/li')
     random_category_option = category_options.sample
     random_category_option.click
-  
+
     # Click on "Create Task" button
     create_task_button = browser.find_element(xpath: '//input[@value="Create Task"]')
     create_task_button.click
@@ -249,12 +260,12 @@ def delete_account(browser, username)
     sleep(10)
 
     # Print a message indicating the selection
-    puts "Selected 'Name' in the Account dropdown and waited for 10 seconds."  
+    puts "Selected 'Name' in the Account dropdown and waited for 10 seconds."
 
     # Enter the account name in the text field
     search_text_field = wait.until { browser.find_element(id: 'q_g_0_c_0_v_0_value') }
     search_text_field.send_keys(username)
-        
+
     # Click on the Search button
     search_button = browser.find_element(css: '.btn.btn-primary.btn-large.submit-search')
     search_button.click
@@ -263,7 +274,7 @@ def delete_account(browser, username)
     wait = Selenium::WebDriver::Wait.new(timeout: 10)
     search_result_account_link = browser.find_element(xpath: '//a[contains(text(), "chaita") and contains(@href, "/accounts/")]')
     search_result_account_link.click
-    
+
     # Execute JavaScript to trigger delete action
     browser.execute_script("$('#menu a:contains(\"Delete\")').click();")
 
@@ -292,7 +303,7 @@ ensure
     browser.quit
 end
 
-  
+
   # Function to select a random option from a dropdown
 def select_random_option(browser, dropdown_id)
 
