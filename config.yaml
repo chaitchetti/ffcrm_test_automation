@@ -1,5 +1,5 @@
 # config.yaml
-webdriver_path: 'C:/Users/ymanral/Chromedriver/chromedriver.exe'
+webdriver_path: '/usr/local/bin/chromedriver'
 username: 'root'
 password: 'root'
 account_name: 'chaita'
