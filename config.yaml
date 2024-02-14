@@ -1,7 +1,7 @@
-# config.yaml
-webdriver_path: '/usr/local/bin/chromedriver'
-chrome_driver_path: '/usr/local/bin/chromedriver'
+chrome_driver_path_windows: 'C:/Users/ymanral/Chromedriver/chromedriver.exe'
+chrome_driver_path_jenkins: '/usr/local/bin/chromedriver'
 username: 'root'
 password: 'root'
 account_name: 'chaita'
 task_name: 'New Task'
+ffcrm_server_link: 'http://52.25.140.217:3000/'
