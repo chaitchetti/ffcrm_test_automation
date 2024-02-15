@@ -27,7 +27,7 @@ class TestRecordExistence < Minitest::Test
   def test_record_not_exists_after_deletion
     table_name = "accounts"
     condition_column = "name"
-    condition_value = "dog"
+    condition_value = "chait"
 
     assert_record_not_exists(@client, table_name, condition_column, condition_value)
   end
