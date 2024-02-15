@@ -8,7 +8,7 @@ include Selenium::WebDriver::Error
 config = YAML.safe_load(File.read('config.yaml'))
 
 
-chrome_driver_path = config['chrome_driver_path_jenkins']
+chrome_driver_path = config['chrome_driver_path']
 username = config['username']
 password = config['password']
 account_name = config['account_name']
